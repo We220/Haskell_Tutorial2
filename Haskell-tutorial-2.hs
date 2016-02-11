@@ -24,16 +24,22 @@ n1 = Num 4 :*: Num (-6)
 
 n2 = Num 0 :-: (Num 0 :-: Num 10)
 
-n3 = undefined
+n3 = Num 3 :*: (Num 4 :+: Num 5)
+
+n4 = Num 3 :-: Num 4
 
 
 ------------------------- Exercise 2
 
 natural :: Aexp -> Integer
-natural (Num n)   = undefined
-natural (a :+: b) = undefined
-natural (a :*: b) = undefined
-natural (a :-: b) = undefined
+natural (Num n)   = if n > 0
+	                then n
+	                else 0
+natural (a :+: b) = eval a + eval b
+natural (a :*: b) = eval a * eval b
+natural (a :-: b) = if eval a - eval b < 0
+	                then 0
+	                else eval a - eval b
 
 
 ------------------------- State as a list
@@ -50,14 +56,19 @@ st = [("x",3), ("y",5), ("z",0)]
 ------------------------- Exercise 3
 
 empty :: State
-empty = undefined
+empty = [("",2)]
 
 get :: Variable -> State -> Integer
-get v [] = undefined
-get v ((x,i):xs) = undefined
+get v [] = 0
+get v ((x,i):xs) = if v == x
+	               then i
+	               else get v (xs)
 
 remove :: Variable -> State -> State
-remove = undefined
+remove v (x,i) = (v,i) 
+remove v ((x,i):xs) = if (get v ((x,i):xs) == 0)
+                      then 0
+                      else remove v (x,i)
 
 set :: Variable -> Integer -> State -> State
 set = undefined
