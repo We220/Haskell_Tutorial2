@@ -77,14 +77,19 @@
   n4 = (Var "x" :+: Num 6) :*: Var "y"
 
   variables :: Aexp -> [Variable]
-  variables (Var "n") = ["n"]
-  variables (Num n)   = 
-  variables (a :+: b) = 
-  variables (a :*: b) = 
-  variables (a :-: b) = 
+  variables (Var n)   = [n]
+  variables (Num n)   = []
+  variables (a :+: b) = (variables a) ++ (variables b)
+  variables (a :*: b) = (variables a) ++ (variables b)
+  variables (a :-: b) = (variables a) ++ (variables b)
 
   evaluate :: Aexp -> State -> Integer
-  evaluate = undefined
+  evaluate (Var n) s   = get n s
+  evaluate (Num n) _   = n
+  evaluate (a :+: b) s = (evaluate a s) + (evaluate b s)
+  evaluate (a :*: b) s = (evaluate a s) * (evaluate b s)
+  evaluate (a :-: b) s = (evaluate a s) - (evaluate b s)
+
 
 
   ------------------------- State as a function
@@ -95,23 +100,26 @@
   ------------------------- Exercise 5
 
   nil :: ST
-  nil v = undefined
+  nil v = 0
 
   one :: ST
-  one v | v == "a"  = undefined
-        | otherwise = undefined
+  one v | v == "a"  = 1
+        | otherwise = nil v
 
   two :: ST
-  two v = undefined
+  two v | v == "b" = 2
+        | otherwise = one v 
 
   putCto3 :: ST -> ST
-  putCto3 st v = undefined
+  putCto3 st v | v == "c" = 3
+               | otherwise = st v
 
   three :: ST
   three = putCto3 two
 
   put :: Variable -> Integer -> ST -> ST
-  put = undefined
+  put v i s w | v == w = i
+              | otherwise = st w
 
   evalST :: Aexp -> ST -> Integer
   evalST = undefined
